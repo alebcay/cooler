@@ -47,6 +47,7 @@ importPorts()
 	done < "$ARCDIR/port.cr"
 }
 
+EXECDIR=$(pwd)
 if [ "$1" = "export" ]
 	then
 	echo -e "Creating working directory..."
@@ -69,8 +70,8 @@ if [ "$1" = "export" ]
 		echo -e "Reading installed ports..."
 		port list installed | awk '{ print $1 }' > "$2/port.cr"
 	fi
+	tar czf "$EXECDIR/$(basename $2).cb" "." >/dev/null
 	popd
-	tar czf "$(basename $2).cb" "$2" >/dev/null
 	rm -rf "$2" >/dev/null
 	exit 0;
 elif [ "$1" = "import" ]
