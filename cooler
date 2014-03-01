@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -e                # exit on uncaught error
 set +o histexpand     # don't expand history expressions
 
 importTaps()
