@@ -102,7 +102,7 @@ elif [ "$1" = "import" ]
 				then
 				if [[ $UID != 0 ]]; then
 				    echo "Administrator privileges are required to install MacPorts packages:"
-				    sudo -E ./cooler.sh importPorts $2
+				    sudo -E cooler importPorts $2
 				fi
 			fi
 			rm -rf "$ARCDIR"
