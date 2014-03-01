@@ -115,5 +115,5 @@ elif [ "$1" = "importPorts" ]
 	importPorts
 else
 	echo "cooler - homebrew/homebrew-cask package migration and transport"
-	echo "usage: cooler [import/export] coolerBundleName"
+	echo "usage: cooler [import/export] coolerBundleName <flags>"
 fi
