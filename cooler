@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set +o histexpand     # don't expand history expressions
+
 importTaps()
 {
 	while read p; do
