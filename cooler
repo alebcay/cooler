@@ -24,14 +24,12 @@ importBrews()
 	while read p; do
 		success=false
 		echo -ne "[ \033[1;34mINSTALLING\033[22;0m ] Installing formula: $p"
-		brew install "$p" > /dev/null 2>&1
-		if [ "$?" -eq 0 ]
+		if brew install "$p" > /dev/null 2>&1
 			then
 			echo -e "\r\033[K[ \033[1;32mDONE\033[22;0m ] Installing formula: $p" && success=true
 		else
 			while read q; do
-				brew install "$q/$p" >/dev/null 2>&1
-				if [ "$?" -eq 0 ]
+				if brew install "$q/$p" >/dev/null 2>&1
 					then
 					echo -e "\r\033[K[ \033[1;32mDONE\033[22;0m ] Installing formula: $q/$p" && success=true
 				fi
