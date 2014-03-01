@@ -1,0 +1,50 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "COOLER" "7" "March 2014" "" ""
+.
+.SH "NAME"
+\fBcooler\fR \- import and export homebrew settings
+.
+.SH "SYNOPSIS"
+\fBname [action] name_of_cooler_bundle <flags>\fR
+.
+.SH "ACTIONS AND FLAGS"
+Actions:
+.
+.IP "\(bu" 4
+\fBimport\fR \- Imports the packages from a cooler bundle
+.
+.IP "\(bu" 4
+\fBexport\fR \- Exports the packages from a cooler bundle
+.
+.IP "" 0
+.
+.P
+Flags:
+.
+.IP "\(bu" 4
+\fB\-\-no\-brew\fR: Ignores Homebrew formulae\. Implies \fB\-\-no\-cask\fR
+.
+.IP "\(bu" 4
+\fB\-\-no\-cask\fR: Ignores Homebrew\-cask casks\.
+.
+.IP "\(bu" 4
+\fB\-\-no\-ports\fR: Ignores MacPorts ports\.
+.
+.IP "" 0
+.
+.SH "EXAMPLES"
+\fBname import bundle \-\-no\-brew\fR
+.
+.P
+\fBname import bundle \-\-no\-ports\fR
+.
+.P
+where the bundle file is named \fBbundle\.cb\fR located in the current working directory\. No support for other directories at this time\.
+.
+.SH "DESCRIPTION"
+cooler is a tool for importing and exporting the list of Homebrew taps, Homebrew packages currently installed, and Homebrew Cask applications\. Three records containing this information is then compressed with with GZip and the resulting file with \fB\.cb\fR extension can be transferred to another computer, and then be imported to install the packages on the first computer onto other computers\.
+.
+.SH "INTERNAL PACKAGE STRUCTURE"
+cooler bundles are stored in \fB\.cb\fR files (short for \fBC\fRooler \fBB\fRundle), which are secretly just \fB\.tar\.gz\fR archives, but a custom extension is used to avoid accidental decompression and tampering\. cooler bundles contain three \fB\.cr\fR files: \fBbrew\.cr\fR, \fBcask\.cr\fR, and \fBtap\.cr\fR (\fB\.cr\fR is short for \fBC\fRooler \fBR\fResource)\. Each contains a list of packages (or taps) installed on the machine at export time\. The files are then compressed and bundled\.

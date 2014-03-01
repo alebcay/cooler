@@ -1,0 +1,119 @@
+#!/bin/bash
+importTaps()
+{
+	while read p; do
+		echo -ne "[ \033[1;34mINSTALLING\033[22;0m ] Configuring tap: $p"
+		( brew tap $p >/dev/null 2>&1 && echo -e "\r\033[K[ \033[1;32mDONE\033[22;0m ] Configuring tap: $p" ) || echo -e "\r\033[K[ \033[1;31mFAILED\033[22;0m ] Configuring tap: $p"
+	done < "$ARCDIR/tap.cr"
+}
+
+importCasks()
+{
+	while read p; do
+		echo -ne "[ \033[1;34mINSTALLING\033[22;0m ] Installing cask: $p"
+		( brew cask install $p >/dev/null 2>&1 && echo -e "\r\033[K[ \033[1;32mDONE\033[22;0m ] Installing cask: $p" ) || echo -e "\r\033[K[ \033[1;31mFAILED\033[22;0m ] Installing cask: $p"
+	done < "$ARCDIR/cask.cr"
+}
+
+importBrews()
+{
+	while read p; do
+		success=false
+		echo -ne "[ \033[1;34mINSTALLING\033[22;0m ] Installing formula: $p"
+		brew install "$p" > /dev/null 2>&1
+		if [ $? -eq 0 ]
+			then
+			echo -e "\r\033[K[ \033[1;32mDONE\033[22;0m ] Installing formula: $p" && success=true
+		else
+			while read q; do
+				brew install "$q/$p" >/dev/null 2>&1
+				if [ $? -eq 0 ]
+					then
+					echo -e "\r\033[K[ \033[1;32mDONE\033[22;0m ] Installing formula: $q/$p" && success=true
+				fi
+			done < "$ARCDIR/tap.cr"
+		fi
+		if [ "$success" = "false" ]; then
+			echo -e "\r\033[K[ \033[1;31mFAILED\033[22;0m ] Installing formula: $p"
+		fi
+	done < "$ARCDIR/brew.cr"
+}
+
+importPorts()
+{
+	while read p; do
+		echo -ne "[ \033[1;34mINSTALLING\033[22;0m ] Installing port: $p"
+		( sudo port install $p >/dev/null 2>&1 && echo -e "\r\033[K[ \033[1;32mDONE\033[22;0m ] Installing port: $p" ) || echo -e "\r\033[K[ \033[1;31mFAILED\033[22;0m ] Installing port: $p"
+	done < "$ARCDIR/port.cr"
+}
+
+if [ "$1" = "export" ]
+	then
+	echo -e "Creating working directory..."
+	rm -rf "./$2" >/dev/null ; mkdir "$2"
+	if [ ! "$3" = "--no-brew" ]
+		then
+		echo -e "Reading configured taps..."
+		brew tap > "$2/tap.cr"
+		echo -e "Reading installed formulae..."
+		brew list | tr "  " "\n" > "$2/brew.cr"
+	fi
+	if [ ! "$3" = "--no-cask" -a ! "$3" = "--no-brew" ]
+		then
+		echo -e "Reading installed casks..."
+		brew cask list | tr "  " "\n" > "$2/cask.cr"
+	fi
+	if [ ! "$3" = "--no-port" ]
+		then
+		echo -e "Reading installed ports..."
+		port list installed | awk '{ print $1 }' > "$2/port.cr"
+	fi
+	tar -czf "$2.cb" "./$2" >/dev/null
+	rm -rf "./$2" >/dev/null
+	exit 0;
+elif [ "$1" = "import" ]
+	then
+	if [ -e "$2.cb" ]
+		then
+			ARCDIR="$2"
+			tar xzf "$2.cb"
+			if [ -s "$2/brew.cr" -a ! "$3" = "--no-brew" ]
+				then
+				[ -s "$2/brew.cr" ] && (( command -v brew >/dev/null 2>&1 && echo -e "\r\033[K[ \033[1;34mINSTALLING\033[22;0m ] Installing dependency: Homebrew" ) || (rm -rf /usr/local/Cellar /usr/local/.git ; brew cleanup >/dev/null 2>&1; yes | ruby -e "$(curl -fsSL https://gist.githubusercontent.com/alebcay/9199899/raw/3dcb12b566f124af96d696b6394e649f441fda98/installbrew)" >/dev/null 2>&1))
+				if [ "$?" == 0 ]
+					then
+					echo -e "\r\033[K[ \033[1;32mDONE\033[22;0m ] Installing dependency: Homebrew"
+				else
+					echo -e "\r\033[K[ \033[1;31mFAILED\033[22;0m ] Installing dependency: Homebrew"
+				fi
+				echo -ne "[ \033[1;33mINSTALLING\033[22;0m ] Updating Homebrew"
+				( brew update >/dev/null 2>&1 && echo -e "\r\033[K[ \033[1;32mDONE\033[22;0m ] Updating Homebrew" ) || echo -e "\r\033[K[ \033[1;31mFAILED\033[22;0m ] Updating Homebrew"
+				echo -ne "[ \033[1;33mINSTALLING\033[22;0m ] Upgrading installed formulae"
+				( brew upgrade >/dev/null 2>&1 && echo -e "\r\033[K[ \033[1;32mDONE\033[22;0m ] Upgrading installed formulae" ) || echo -e "\r\033[K[ \033[1;31mFAILED\033[22;0m ] Upgrading installed formulae"
+				importTaps
+				importBrews
+			fi
+			if [ -s "$2/cask.cr" -a ! "$3" = "--no-cask" -a ! "$3" = "--no-brew" ]
+				then
+				[ -s "$2/cask.cr" ] && ( echo -ne "[ \033[1;33mINSTALLING\033[22;0m ] Installing dependency: Homebrew-Cask" && ( brew install phinze/cask/brew-cask >/dev/null 2>&1 && echo -e "\r\033[K[ \033[1;32mDONE\033[22;0m ] Installing dependency: Homebrew-Cask" ) || echo -e "\r\033[K[ \033[1;31mFAILED\033[22;0m ] Installing dependency: Homebrew-Cask")
+				importCasks
+			fi
+			if [ -s "$2/port.cr" -a ! "$3" = "--no-port" ]
+				then
+				if [[ $UID != 0 ]]; then
+				    echo "Administrator privileges are required to install MacPorts packages:"
+				    sudo -E ./cooler.sh importPorts $2
+				fi
+			fi
+			rm -rf "$ARCDIR"
+	else
+		echo -e "[ \033[1;31mFAILED\033[22;0m ] No such bundle: $2.cb" && exit 1
+	fi
+elif [ "$1" = "importPorts" ]
+	then
+	ARCDIR="$2"
+	importPorts
+else
+	echo "cooler - homebrew/homebrew-cask package migration and transport"
+	echo "usage: cooler [import/export] coolerBundleName"
+fi

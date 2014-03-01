@@ -1,0 +1,38 @@
+cooler(7) -- import and export homebrew settings
+========================
+
+## SYNOPSIS
+
+`name [action] name_of_cooler_bundle <flags>`
+
+## ACTIONS AND FLAGS
+
+Actions:
+
+* `import` - Imports the packages from a cooler bundle
+
+* `export` - Exports the packages from a cooler bundle
+
+Flags:
+
+* `--no-brew`: Ignores Homebrew formulae. Implies `--no-cask`
+
+* `--no-cask`: Ignores Homebrew-cask casks.
+
+* `--no-ports`: Ignores MacPorts ports.
+
+## EXAMPLES
+
+`name import bundle --no-brew`
+
+`name import bundle --no-ports`
+
+where the bundle file is named `bundle.cb` located in the current working directory. No support for other directories at this time.
+
+## DESCRIPTION
+
+cooler is a tool for importing and exporting the list of Homebrew taps, Homebrew packages currently installed, and Homebrew Cask applications. Three records containing this information is then compressed with with GZip and the resulting file with `.cb` extension can be transferred to another computer, and then be imported to install the packages on the first computer onto other computers.
+
+## INTERNAL PACKAGE STRUCTURE
+
+cooler bundles are stored in `.cb` files (short for **C**ooler **B**undle), which are secretly just `.tar.gz` archives, but a custom extension is used to avoid accidental decompression and tampering. cooler bundles contain three `.cr` files: `brew.cr`, `cask.cr`, and `tap.cr` (`.cr` is short for **C**ooler **R**esource). Each contains a list of packages (or taps) installed on the machine at export time. The files are then compressed and bundled.
