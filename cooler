@@ -70,8 +70,8 @@ if [ "$1" = "export" ]
 		echo -e "Reading installed ports..."
 		port list installed | awk '{ print $1 }' > "$2/port.cr"
 	fi
-	tar czf "$(basename $2).cb" "." >/dev/null 2>&1
-	echo -e "\033[1;32mYour Cooler bundle is at\033[1;33m $EXECDIR/$(basename $2).cb\033[1;34m.\033[22;0m"
+	tar czf "../$(basename $2).cb" "." >/dev/null 2>&1
+	echo -e "\033[1;32mYour Cooler bundle is at\033[1;33m ../$(basename $2).cb\033[1;34m.\033[22;0m"
 	popd >/dev/null 2>&1
 	rm -rf "$2" >/dev/null 2>&1
 	exit 0;
