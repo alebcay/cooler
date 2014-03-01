@@ -73,6 +73,7 @@ if [ "$1" = "export" ]
 	tar czf "$EXECDIR/$(basename $2).cb" "." >/dev/null
 	popd
 	rm -rf "$2" >/dev/null
+	echo -e "\033[1;32mYour Cooler bundle is at\033[1;33m $EXECDIR/$(basename $2).cb\033[1;34m.\033[22;0m"
 	exit 0;
 elif [ "$1" = "import" ]
 	then
