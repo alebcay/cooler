@@ -3,7 +3,7 @@ cooler(7) -- import and export homebrew settings
 
 ## SYNOPSIS
 
-`name [action] name_of_cooler_bundle <flags>`
+`cooler [action] name_of_cooler_bundle <flags>`
 
 ## ACTIONS AND FLAGS
 
@@ -23,9 +23,9 @@ Flags:
 
 ## EXAMPLES
 
-`name import bundle --no-brew`
+`cooler import bundle --no-brew`
 
-`name import bundle --no-ports`
+`cooler import bundle --no-ports`
 
 where the bundle file is named `bundle.cb` located in the current working directory. No support for other directories at this time.
 

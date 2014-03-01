@@ -79,7 +79,7 @@ elif [ "$1" = "import" ]
 			tar xzf "$2.cb"
 			if [ -s "$2/brew.cr" -a ! "$3" = "--no-brew" ]
 				then
-				[ -s "$2/brew.cr" ] && (( command -v brew >/dev/null 2>&1 && echo -e "\r\033[K[ \033[1;34mINSTALLING\033[22;0m ] Installing dependency: Homebrew" ) || (rm -rf /usr/local/Cellar /usr/local/.git ; brew cleanup >/dev/null 2>&1; yes | ruby -e "$(curl -fsSL https://gist.githubusercontent.com/alebcay/9199899/raw/3dcb12b566f124af96d696b6394e649f441fda98/installbrew)" >/dev/null 2>&1))
+				[ -s "$2/brew.cr" ] && (( command -v brew >/dev/null 2>&1 && echo -e "\r\033[K[ \033[1;34mINSTALLING\033[22;0m ] Installing dependency: Homebrew" ) || (rm -rf /usr/local/Cellar /usr/local/.git ; brew cleanup >/dev/null 2>&1; yes | ruby -e "$(curl -fsSL https://raw.github.com/alebcay/cooler/master/installbrew)" >/dev/null 2>&1))
 				if [ "$?" == 0 ]
 					then
 					echo -e "\r\033[K[ \033[1;32mDONE\033[22;0m ] Installing dependency: Homebrew"
