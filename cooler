@@ -50,7 +50,8 @@ importPorts()
 if [ "$1" = "export" ]
 	then
 	echo -e "Creating working directory..."
-	rm -rf "./$2" >/dev/null ; mkdir "$2"
+	rm -rf "$2" >/dev/null ; mkdir "$2"
+	pushd "$2"
 	if [ ! "$3" = "--no-brew" ]
 		then
 		echo -e "Reading configured taps..."
@@ -68,7 +69,8 @@ if [ "$1" = "export" ]
 		echo -e "Reading installed ports..."
 		port list installed | awk '{ print $1 }' > "$2/port.cr"
 	fi
-	tar czf "$2.cb" "$2" >/dev/null
+	popd
+	tar czf "$(basename $2).cb" "$2" >/dev/null
 	rm -rf "$2" >/dev/null
 	exit 0;
 elif [ "$1" = "import" ]
