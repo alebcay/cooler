@@ -78,7 +78,7 @@ if [ "$1" = "export" ]
 	exit 0;
 elif [ "$1" = "import" ]
 	then
-	if [ -e "$2.cb" -o -e "$(dirname "$2".cb)" ]
+	if [ -e "$2.cb" -o -e "$(dirname "$2")/$(basename $2).cb)" ]
 		then
 			pushd "$(dirname "$2")" >/dev/null 2>&1
 			ARCDIR="$2"
@@ -111,7 +111,7 @@ elif [ "$1" = "import" ]
 				    sudo -E cooler importPorts $2
 				fi
 			fi
-			popd
+			popd >/dev/null 2>&1
 			rm -rf "$ARCDIR"
 	else
 		echo -e "[ \033[1;31mFAILED\033[22;0m ] No such bundle: $2.cb" && exit 1
