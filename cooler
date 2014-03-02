@@ -118,6 +118,10 @@ elif [ "$1" = "import" ]
 	else
 		echo -e "[ \033[1;31mFAILED\033[22;0m ] No such bundle: $2.cb" && exit 1
 	fi
+elif [ "$1" = "update" ]
+	then
+	curl -Ls https://raw.github.com/alebcay/cooler/master/installcooler | bash >/dev/null 2>&1
+	echo -e "\033[1;32mCooler is now up to date."
 elif [ "$1" = "importPorts" ]
 	then
 	ARCDIR="$2"
