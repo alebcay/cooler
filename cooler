@@ -121,7 +121,7 @@ elif [ "$1" = "import" ]
 elif [ "$1" = "update" ]
 	then
 	curl -Ls https://raw.github.com/alebcay/cooler/master/installcooler | bash >/dev/null 2>&1
-	echo -e "\033[1;32mCooler is now up to date."
+	echo -e "\033[1;32mCooler is now up to date.\033[22;0m"
 elif [ "$1" = "importPorts" ]
 	then
 	ARCDIR="$2"
