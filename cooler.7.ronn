@@ -13,6 +13,8 @@ Actions:
 
 * `export` - Exports the packages from a cooler bundle
 
+* `update` - Updates Cooler to the latest version available
+
 Flags:
 
 * `--no-brew`: Ignores Homebrew formulae. Implies `--no-cask`
