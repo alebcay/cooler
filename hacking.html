@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<!-- saved from url=(0015)http://brew.sh/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="dc.creator" content="Rémi Prévost - http://exomel.com">
+    <title>Cooler - Take your packages with you</title>
+    <link rel="stylesheet" href="./screen.css" type="text/css" media="screen">
+    
+    
+    <script type="text/javascript">
+        function selectText(elem) {
+            if (document.selection) {
+                var range = document.body.createTextRange();
+                range.moveToElementText(elem);
+                range.select();
+            } else if (window.getSelection) {
+                var range = document.createRange();
+                range.selectNode(elem);
+                window.getSelection().addRange(range);
+            }
+        }
+    </script>
+  </head>
+  <body>
+    <div id="wrap">
+      <div id="informations">
+        <ul>
+          <div class="group row">
+            <h1>Hacking</h1>
+                        <p style="text-align: center;"><a href="http://coolerapp.tk">Return to Home</a></p>
+            <p>Modifying the source code of Cooler is as easy as opening a <strong>single</strong> shell script.</p>
+            <h3>Cooler Bundle Structure</h3>
+            <p>The information Cooler exports is saved in Cooler bundle files with extension &quot;<code>.cb</code>&quot;. Cooler bundles are GZipped TAR archives (<code>tar.gz</code>). If you decompress a Cooler bundle, you'll find that it has some or all of the following elements: <ul><li><code>brew.cr</code></li><li><code>cask.cr</code></li><li><code>port.cr</code></li><li><code>tap.cr</code></li></ul> 
+            <p>Each element is a Cooler Resource file, and as their names suggest, the data from Homebrew, Cask, and MacPorts are exported into these resources. The resources are plain text files, so they can easily be modified. If you intend to implement further functionality into Cooler, the creation and parsing of additional Cooler Resources might be necessary. They can be used for storing configuration and settings, among other uses.
+            </p>
+            </p>
+            <p>&nbsp; </p>
+            <p style="text-align: center;"><a href="http://coolerapp.tk">Return to Home</a></p>
+          </div>
+          
+
+          
+            <div class="group row credits">
+              <p>This website is based on the <a href="http://brew.sh">Homebrew website</a> originally by <a href="http://exomel.com/">Rémi Prévost</a>. </p>
+            </div>
+          
+        </ul>
+      </div>
+    </div>
+</body></html>
