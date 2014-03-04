@@ -120,7 +120,7 @@ elif [ "$1" = "import" ]
 	fi
 elif [ "$1" = "update" ]
 	then
-	if [ "$2" = "--dev"]
+	if [ "$2" = "--dev" ]
 		then
 		export COOLER_UPDATE_MODE="dev"
 		curl -Ls https://raw.github.com/alebcay/cooler/master/installcooler | bash >/dev/null 2>&1
