@@ -53,11 +53,8 @@ EXECDIR="$(pwd)"
 if [ "$1" = "export" ]
 	then
 	echo -e "Creating working directory..."
-	echo "${2%.*}"
 	rm -rf "${2%.*}" >/dev/null ; mkdir "${2%.*}"
-	echo "$(pwd)"
 	pushd "${2%.*}" >/dev/null 2>&1
-	echo "$(pwd)"
 	if [ ! "$3" = "--no-brew" ]
 		then
 		echo -e "Reading configured taps..."
@@ -76,12 +73,9 @@ if [ "$1" = "export" ]
 		port list installed | awk '{ print $1 }' > "port.cr"
 	fi
 	cd ..
-	echo "$(pwd)"
-	echo "tar czvf "$(basename "$2")" "$(basename "${2%.*}")""
 	tar czvf "./$(basename "$2")" "$(basename "${2%.*}")"
 	echo -e "\033[1;32mYour Cooler bundle is at\033[1;33m $2\033[1;34m.\033[22;0m"
 	popd >/dev/null 2>&1
-	echo "$(pwd)"
 	rm -rf "${2%.*}" >/dev/null 2>&1
 	exit 0;
 elif [ "$1" = "import" ]
