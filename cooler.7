@@ -30,13 +30,16 @@ Actions:
 Flags:
 .
 .IP "\(bu" 4
-\fB\-\-no\-brew\fR: Ignores Homebrew formulae\. Implies \fB\-\-no\-cask\fR
+\fB\-\-no\-brew\fR: Ignores Homebrew formulae\. Implies \fB\-\-no\-cask\fR (Use with \fBimport\fR and \fBexport\fR)
 .
 .IP "\(bu" 4
-\fB\-\-no\-cask\fR: Ignores Homebrew\-cask casks\.
+\fB\-\-no\-cask\fR: Ignores Homebrew\-cask casks\. (Use with \fBimport\fR and \fBexport\fR)
 .
 .IP "\(bu" 4
-\fB\-\-no\-ports\fR: Ignores MacPorts ports\.
+\fB\-\-no\-ports\fR: Ignores MacPorts ports\. (Use with \fBimport\fR and \fBexport\fR)
+.
+.IP "\(bu" 4
+\fB\-\-password\-protect\fR: Creates a password protected Cooler bundle (Use with \fBexport\fR)
 .
 .IP "" 0
 .
@@ -56,4 +59,4 @@ where the bundle file is named \fBbundle\.cb\fR located in the current working d
 cooler is a tool for importing and exporting the list of Homebrew taps, Homebrew packages currently installed, and Homebrew Cask applications\. Three records containing this information is then compressed with with GZip and the resulting file with \fB\.cb\fR extension can be transferred to another computer, and then be imported to install the packages on the first computer onto other computers\.
 .
 .SH "INTERNAL PACKAGE STRUCTURE"
-cooler bundles are stored in \fB\.cb\fR files (short for \fBC\fRooler \fBB\fRundle), which are secretly just \fB\.tar\.gz\fR archives, but a custom extension is used to avoid accidental decompression and tampering\. cooler bundles contain four \fB\.cr\fR files: \fBbrew\.cr\fR, \fBcask\.cr\fR, \fBtap\.cr\fR, and \fBport\.cr\fR (\fB\.cr\fR is short for \fBC\fRooler \fBR\fResource)\. Each contains a list of packages (or taps) installed on the machine at export time\. The files are then compressed and bundled\.
+cooler bundles are stored in \fB\.cb\fR files (short for \fBC\fRooler \fBB\fRundle)\. Bundles contain four \fB\.cr\fR files: \fBbrew\.cr\fR, \fBcask\.cr\fR, \fBtap\.cr\fR, and \fBport\.cr\fR (\fB\.cr\fR is short for \fBC\fRooler \fBR\fResource)\. Each contains a list of packages (or taps) installed on the machine at export time\. The files are then compressed and bundled\.
