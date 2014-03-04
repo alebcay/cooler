@@ -3,7 +3,7 @@ cooler(7) -- import and export homebrew settings
 
 ## SYNOPSIS
 
-`cooler [action] name_of_cooler_bundle <flags>`
+`cooler [action] /path/to/cooler/bundle.cb <flags>`
 
 ## ACTIONS AND FLAGS
 
@@ -12,6 +12,8 @@ Actions:
 * `import` - Imports the packages from a cooler bundle
 
 * `export` - Exports the packages from a cooler bundle
+
+* `list` - Lists contents of a cooler bundle
 
 * `update` - Updates Cooler to the latest version available
 
@@ -25,11 +27,13 @@ Flags:
 
 ## EXAMPLES
 
-`cooler import bundle --no-brew`
+`cooler import /foo/bar/bundle.cb --no-brew`
 
-`cooler import bundle --no-ports`
+`cooler export /foo/bar/bundle.cb --no-port`
 
-where the bundle file is named `bundle.cb` located in the current working directory. No support for other directories at this time.
+`cooler list /foo/bar/bundle.cb`
+
+where the bundle file is named `bundle.cb` located in the current working directory.
 
 ## DESCRIPTION
 
@@ -37,4 +41,4 @@ cooler is a tool for importing and exporting the list of Homebrew taps, Homebrew
 
 ## INTERNAL PACKAGE STRUCTURE
 
-cooler bundles are stored in `.cb` files (short for **C**ooler **B**undle), which are secretly just `.tar.gz` archives, but a custom extension is used to avoid accidental decompression and tampering. cooler bundles contain three `.cr` files: `brew.cr`, `cask.cr`, and `tap.cr` (`.cr` is short for **C**ooler **R**esource). Each contains a list of packages (or taps) installed on the machine at export time. The files are then compressed and bundled.
+cooler bundles are stored in `.cb` files (short for **C**ooler **B**undle), which are secretly just `.tar.gz` archives, but a custom extension is used to avoid accidental decompression and tampering. cooler bundles contain four `.cr` files: `brew.cr`, `cask.cr`, `tap.cr`, and `port.cr` (`.cr` is short for **C**ooler **R**esource). Each contains a list of packages (or taps) installed on the machine at export time. The files are then compressed and bundled.

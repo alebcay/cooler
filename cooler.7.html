@@ -74,7 +74,7 @@
 
 <h2 id="SYNOPSIS">SYNOPSIS</h2>
 
-<p><code>cooler [action] name_of_cooler_bundle &lt;flags></code></p>
+<p><code>cooler [action] /path/to/cooler/bundle.cb &lt;flags></code></p>
 
 <h2 id="ACTIONS-AND-FLAGS">ACTIONS AND FLAGS</h2>
 
@@ -83,6 +83,7 @@
 <ul>
 <li><p><code>import</code> - Imports the packages from a cooler bundle</p></li>
 <li><p><code>export</code> - Exports the packages from a cooler bundle</p></li>
+<li><p><code>list</code> - Lists contents of a cooler bundle</p></li>
 <li><p><code>update</code> - Updates Cooler to the latest version available</p></li>
 </ul>
 
@@ -98,11 +99,13 @@
 
 <h2 id="EXAMPLES">EXAMPLES</h2>
 
-<p><code>cooler import bundle --no-brew</code></p>
+<p><code>cooler import /foo/bar/bundle.cb --no-brew</code></p>
 
-<p><code>cooler import bundle --no-ports</code></p>
+<p><code>cooler export /foo/bar/bundle.cb --no-port</code></p>
 
-<p>where the bundle file is named <code>bundle.cb</code> located in the current working directory. No support for other directories at this time.</p>
+<p><code>cooler list /foo/bar/bundle.cb</code></p>
+
+<p>where the bundle file is named <code>bundle.cb</code> located in the current working directory.</p>
 
 <h2 id="DESCRIPTION">DESCRIPTION</h2>
 
@@ -110,7 +113,7 @@
 
 <h2 id="INTERNAL-PACKAGE-STRUCTURE">INTERNAL PACKAGE STRUCTURE</h2>
 
-<p>cooler bundles are stored in <code>.cb</code> files (short for <strong>C</strong>ooler <strong>B</strong>undle), which are secretly just <code>.tar.gz</code> archives, but a custom extension is used to avoid accidental decompression and tampering. cooler bundles contain three <code>.cr</code> files: <code>brew.cr</code>, <code>cask.cr</code>, and <code>tap.cr</code> (<code>.cr</code> is short for <strong>C</strong>ooler <strong>R</strong>esource). Each contains a list of packages (or taps) installed on the machine at export time. The files are then compressed and bundled.</p>
+<p>cooler bundles are stored in <code>.cb</code> files (short for <strong>C</strong>ooler <strong>B</strong>undle), which are secretly just <code>.tar.gz</code> archives, but a custom extension is used to avoid accidental decompression and tampering. cooler bundles contain four <code>.cr</code> files: <code>brew.cr</code>, <code>cask.cr</code>, <code>tap.cr</code>, and <code>port.cr</code> (<code>.cr</code> is short for <strong>C</strong>ooler <strong>R</strong>esource). Each contains a list of packages (or taps) installed on the machine at export time. The files are then compressed and bundled.</p>
 
 
   <ol class='man-decor man-foot man foot'>
