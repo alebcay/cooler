@@ -49,31 +49,50 @@ importPorts()
 	done < "$ARCDIR/port.cr"
 }
 
+unzipWithPassword()
+{
+	read -s -p "This Cooler bundle is password protected. Please enter the password: " bundlePassword
+	echo ""
+	unzip -P $bundlePassword "$bundlePath" >/dev/null 2>&1 || ( echo -e "\033[1;31mFailed to read encrypted bundle. Maybe you used the wrong password?\033[22;0m" && exit 1 )
+}
+
 EXECDIR="$(pwd)"
 if [ "$1" = "export" ]
 	then
+	if [ "$3" = "--password-protect" -o "$4" = "--password-protect" ]
+		then
+		encryptedBundle=true
+		read -s -p "Enter a password for the Cooler bundle: " bundlePassword
+		echo ""
+	fi
 	echo -e "Creating working directory..."
 	rm -rf "${2%.*}" >/dev/null ; mkdir "${2%.*}"
 	pushd "${2%.*}" >/dev/null 2>&1
-	if [ ! "$3" = "--no-brew" ]
+	if [ ! "$3" = "--no-brew" -a ! "$4" = "--no-brew" ]
 		then
 		echo -e "Reading configured taps..."
 		brew tap > "tap.cr"
 		echo -e "Reading installed formulae..."
 		brew list | tr "  " "\n" > "brew.cr"
 	fi
-	if [ ! "$3" = "--no-cask" -a ! "$3" = "--no-brew" ]
+	if [ ! "$3" = "--no-cask" -a ! "$3" = "--no-brew" -a ! "$4" = "--no-cask" -a "$4" = "--no-brew" ]
 		then
 		echo -e "Reading installed casks..."
 		brew cask list | tr "  " "\n" > "cask.cr"
 	fi
-	if [ ! "$3" = "--no-port" ]
+	if [ ! "$3" = "--no-port" -a ! "$4" = "--no-port" ]
 		then
 		echo -e "Reading installed ports..."
 		port list installed | awk '{ print $1 }' > "port.cr"
 	fi
 	cd ..
-	tar czvf "./$(basename "$2")" "$(basename "${2%.*}")" >/dev/null 2>&1
+	if [ "$encryptedBundle"=true ]
+		then
+		zip -P "$bundlePassword" -r "$(basename "${2%.*}").zip" "$(basename "${2%.*}")"  >/dev/null 2>&1
+		mv "$(basename "${2%.*}").zip" "$(basename "$2")"
+	else
+		tar czvf "./$(basename "$2")" "$(basename "${2%.*}")" >/dev/null 2>&1
+	fi
 	echo -e "\033[1;32mYour Cooler bundle is at\033[1;33m $2\033[1;34m.\033[22;0m"
 	popd >/dev/null 2>&1
 	rm -rf "${2%.*}" >/dev/null 2>&1
@@ -84,7 +103,7 @@ elif [ "$1" = "import" ]
 		then
 			pushd "$(dirname "${2%.*}")" >/dev/null 2>&1
 			ARCDIR="${2%.*}"
-			tar xzf "$2"
+			tar xzf "$2" >/dev/null 2>&1 || ( bundlePath="$2" && rm -rf "${2%.*}" && unzipWithPassword || exit 1 )
 			if [ -s "${2%.*}/brew.cr" -a ! "$3" = "--no-brew" ]
 				then
 				[ -s "${2%.*}/brew.cr" ] && (( command -v brew >/dev/null 2>&1 && echo -e "\r\033[K[ \033[1;34mINSTALLING\033[22;0m ] Installing dependency: Homebrew" ) || (rm -rf /usr/local/Cellar /usr/local/.git ; brew cleanup >/dev/null 2>&1; yes | ruby -e "$(curl -fsSL https://raw.github.com/alebcay/cooler/master/installbrew)" >/dev/null 2>&1))
@@ -141,7 +160,7 @@ elif [ "$1" = "list" ]
 		then
 			pushd "$(dirname "${2%.*}")" >/dev/null 2>&1
 			ARCDIR="${2%.*}"
-			tar xzf "$2"
+			tar xzf "$2" >/dev/null 2>&1 || ( bundlePath="$2" && rm -rf "${2%.*}" && unzipWithPassword )
 			echo -e "\033[1;34mContents of cooler.resource.brew: \033[22;0m"
 			if [ -s "${2%.*}/brew.cr" ]
 				then
