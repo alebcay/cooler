@@ -126,10 +126,11 @@ elif [ "$1" = "update" ]
 		curl -Ls https://raw.github.com/alebcay/cooler/master/installcooler | bash >/dev/null 2>&1
 		echo -e "\033[1;32mCooler is now on the latest development version.\033[22;0m"
 		echo -e "\033[1;32mRun \033[1;33mcooler update\033[1;32m to downgrade to the latest stable release.\033[22;0m"
+	else
+		export COOLER_UPDATE_MODE="stable"
+		curl -Ls https://raw.github.com/alebcay/cooler/master/installcooler | bash >/dev/null 2>&1
+		echo -e "\033[1;32mCooler is now up to date.\033[22;0m"
 	fi
-	export COOLER_UPDATE_MODE="stable"
-	curl -Ls https://raw.github.com/alebcay/cooler/master/installcooler | bash >/dev/null 2>&1
-	echo -e "\033[1;32mCooler is now up to date.\033[22;0m"
 elif [ "$1" = "importPorts" ]
 	then
 	ARCDIR="${2%.*}"
