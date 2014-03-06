@@ -19,11 +19,15 @@ Actions:
 
 Flags:
 
-* `--no-brew`: Ignores Homebrew formulae. Implies `--no-cask`
+* `--no-brew`: Ignores Homebrew formulae. Implies `--no-cask` (Use with `import` and `export`)
 
-* `--no-cask`: Ignores Homebrew-cask casks.
+* `--no-cask`: Ignores Homebrew-cask casks. (Use with `import` and `export`)
 
-* `--no-ports`: Ignores MacPorts ports.
+* `--no-ports`: Ignores MacPorts ports. (Use with `import` and `export`)
+
+* `--password-protect`: Creates a password protected Cooler bundle (Use with `export`)
+
+* `--mackup`: Includes a Mackup backup of the current setup in your bundle when exporting, or apply Mackup settings from a Cooler bundle when importing
 
 ## EXAMPLES
 
@@ -41,4 +45,4 @@ cooler is a tool for importing and exporting the list of Homebrew taps, Homebrew
 
 ## INTERNAL PACKAGE STRUCTURE
 
-cooler bundles are stored in `.cb` files (short for **C**ooler **B**undle), which are secretly just `.tar.gz` archives, but a custom extension is used to avoid accidental decompression and tampering. cooler bundles contain four `.cr` files: `brew.cr`, `cask.cr`, `tap.cr`, and `port.cr` (`.cr` is short for **C**ooler **R**esource). Each contains a list of packages (or taps) installed on the machine at export time. The files are then compressed and bundled.
+cooler bundles are stored in `.cb` files (short for **C**ooler **B**undle). Bundles contain four `.cr` files: `brew.cr`, `cask.cr`, `tap.cr`, and `port.cr` (`.cr` is short for **C**ooler **R**esource). Each contains a list of packages (or taps) installed on the machine at export time. The files are then compressed and bundled.
