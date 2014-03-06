@@ -98,7 +98,7 @@ if [ "$1" = "export" ]
 	echo -e "Creating working directory..."
 	rm -rf "${2%.*}" >/dev/null ; mkdir "${2%.*}"
 	pushd "${2%.*}" >/dev/null 2>&1
-	ARCDIR="${2%.*}"
+	ARCDIR="$(pwd)"
 	if [ "$3" = "--mackup" -o "$4" = "--mackup" -o "$5" = "--mackup" ]
 		then
 		exportMackupSettings
@@ -138,7 +138,7 @@ elif [ "$1" = "import" ]
 	if [ -e "$2" -o -e "$(dirname "${2%.*}")/$2).cb)" ]
 		then
 			pushd "$(dirname "${2%.*}")" >/dev/null 2>&1
-			ARCDIR="${2%.*}"
+			ARCDIR="$(pwd)"
 			echo "Unpacking Cooler bundle..."
 			cat "$2" | lzma -d | tar x  >/dev/null 2>&1 || ( bundlePath="$2" && rm -rf "${2%.*}" && unzipWithPassword || exit 1 )
 			if [ -d "${2%.*}/Mackup" -o "$3" = "--mackup" -o "$4" = "--mackup" -o "$5" = "--mackup" ]
@@ -193,14 +193,14 @@ elif [ "$1" = "update" ]
 	fi
 elif [ "$1" = "importPorts" ]
 	then
-	ARCDIR="${2%.*}"
+	ARCDIR="$(pwd)"
 	importPorts
 elif [ "$1" = "list" ]
 	then
 	if [ -e "$2" -o -e "$(dirname "${2%.*}")/$2" ]
 		then
 			pushd "$(dirname "${2%.*}")" >/dev/null 2>&1
-			ARCDIR="${2%.*}"
+			ARCDIR="$(pwd)"
 			cat "$2" | lzma -d | tar x  >/dev/null 2>&1 || ( bundlePath="$2" && rm -rf "${2%.*}" && unzipWithPassword || exit 1 )
 			echo -e "\033[1;34mContents of cooler.resource.brew: \033[22;0m"
 			if [ -s "${2%.*}/brew.cr" ]
