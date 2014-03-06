@@ -49,6 +49,36 @@ importPorts()
 	done < "$ARCDIR/port.cr"
 }
 
+exportMackupSettings()
+{
+	echo "Backing up application settings with Mackup..."
+	[ -e ~/.mackup.cfg ] && mv ~/.mackup.cfg ~/.mackup.cfg.old
+	touch ~/.mackup.cfg
+	echo "[storage]" >> ~/.mackup.cfg
+	echo "engine = file_system" >> ~/.mackup.cfg
+	echo "path = "$ARCDIR"" >> ~/.mackup.cfg
+	command -v mackup >/dev/null 2>&1 || brew install mackup
+	yes Yes | mackup backup >/dev/null 2>&1
+	yes Yes | mackup uninstall >/dev/null 2>&1
+	rm ~/.mackup.cfg
+	[ -e ~/.mackup.cfg.old ] && mv ~/.mackup.cfg.old ~/.mackup.cfg
+}
+
+importMackupSettings()
+{
+	echo -e "Copying Mackup settings to \033[1;33m/usr/local/Mackup\033[22;0m..."
+	cp -rf Mackup /usr/local/Library
+	echo "Setting up Mackup..."
+	[ -e ~/.mackup.cfg ] && rm ~/.mackup.cfg
+	touch ~/.mackup.cfg
+	echo "[storage]" >> ~/.mackup.cfg
+	echo "engine = file_system" >> ~/.mackup.cfg
+	echo "path = /usr/local/Library" >> ~/.mackup.cfg
+	command -v mackup >/dev/null 2>&1 || brew install mackup
+	echo "Applying Mackup settings..."
+	yes Yes | mackup restore
+}
+
 unzipWithPassword()
 {
 	read -s -p "This Cooler bundle is password protected. Please enter the password: " bundlePassword
@@ -59,7 +89,7 @@ unzipWithPassword()
 EXECDIR="$(pwd)"
 if [ "$1" = "export" ]
 	then
-	if [ "$3" = "--password-protect" -o "$4" = "--password-protect" ]
+	if [ "$3" = "--password-protect" -o "$4" = "--password-protect" -o "$5" = "--password-protect" ]
 		then
 		encryptedBundle=true
 		read -s -p "Enter a password for the Cooler bundle: " bundlePassword
@@ -68,30 +98,36 @@ if [ "$1" = "export" ]
 	echo -e "Creating working directory..."
 	rm -rf "${2%.*}" >/dev/null ; mkdir "${2%.*}"
 	pushd "${2%.*}" >/dev/null 2>&1
-	if [ ! "$3" = "--no-brew" -a ! "$4" = "--no-brew" ]
+	ARCDIR="${2%.*}"
+	if [ "$3" = "--mackup" -o "$4" = "--mackup" -o "$5" = "--mackup" ]
+		then
+		exportMackupSettings
+	fi
+	if [ ! "$3" = "--no-brew" -a ! "$4" = "--no-brew" -a ! "$5" = "--no-brew" ]
 		then
 		echo -e "Reading configured taps..."
 		brew tap > "tap.cr"
 		echo -e "Reading installed formulae..."
 		brew list | tr "  " "\n" > "brew.cr"
 	fi
-	if [ ! "$3" = "--no-cask" -a ! "$3" = "--no-brew" -a ! "$4" = "--no-cask" -a "$4" = "--no-brew" ]
+	if [ ! "$3" = "--no-cask" -a ! "$3" = "--no-brew" -a ! "$4" = "--no-cask" -a "$4" = "--no-brew" -a ! "$5" = "--no-cask" -a "$5" = "--no-brew" ]
 		then
 		echo -e "Reading installed casks..."
 		brew cask list | tr "  " "\n" > "cask.cr"
 	fi
-	if [ ! "$3" = "--no-port" -a ! "$4" = "--no-port" ]
+	if [ ! "$3" = "--no-port" -a ! "$4" = "--no-port" -a ! "$5" = "--no-port" ]
 		then
 		echo -e "Reading installed ports..."
 		port list installed | awk '{ print $1 }' > "port.cr"
 	fi
 	cd ..
-	if [ "$encryptedBundle"=true ]
+	echo "Packing bundle..."
+	if [ "$encryptedBundle" = true ]
 		then
 		zip -P "$bundlePassword" -r "$(basename "${2%.*}").zip" "$(basename "${2%.*}")"  >/dev/null 2>&1
 		mv "$(basename "${2%.*}").zip" "$(basename "$2")"
 	else
-		tar czvf "./$(basename "$2")" "$(basename "${2%.*}")" >/dev/null 2>&1
+		tar -c "$(basename "${2%.*}")" | lzma -c -z > "./$(basename "$2")"
 	fi
 	echo -e "\033[1;32mYour Cooler bundle is at\033[1;33m $2\033[1;34m.\033[22;0m"
 	popd >/dev/null 2>&1
@@ -103,8 +139,13 @@ elif [ "$1" = "import" ]
 		then
 			pushd "$(dirname "${2%.*}")" >/dev/null 2>&1
 			ARCDIR="${2%.*}"
-			tar xzf "$2" >/dev/null 2>&1 || ( bundlePath="$2" && rm -rf "${2%.*}" && unzipWithPassword || exit 1 )
-			if [ -s "${2%.*}/brew.cr" -a ! "$3" = "--no-brew" ]
+			echo "Unpacking Cooler bundle..."
+			cat "$2" | lzma -d | tar x  >/dev/null 2>&1 || ( bundlePath="$2" && rm -rf "${2%.*}" && unzipWithPassword || exit 1 )
+			if [ -d "${2%.*}/Mackup" -o "$3" = "--mackup" -o "$4" = "--mackup" -o "$5" = "--mackup" ]
+				then
+				importMackupSettings
+			fi
+			if [ -s "${2%.*}/brew.cr" -a ! "$3" = "--no-brew" -a ! "$4" = "--no-brew" -a ! "$5" = "--no-brew" ]
 				then
 				[ -s "${2%.*}/brew.cr" ] && (( command -v brew >/dev/null 2>&1 && echo -e "\r\033[K[ \033[1;34mINSTALLING\033[22;0m ] Installing dependency: Homebrew" ) || (rm -rf /usr/local/Cellar /usr/local/.git ; brew cleanup >/dev/null 2>&1; yes | ruby -e "$(curl -fsSL https://raw.github.com/alebcay/cooler/master/installbrew)" >/dev/null 2>&1))
 				if [ "$?" == 0 ]
@@ -120,12 +161,12 @@ elif [ "$1" = "import" ]
 				importTaps
 				importBrews
 			fi
-			if [ -s "${2%.*}/cask.cr" -a ! "$3" = "--no-cask" -a ! "$3" = "--no-brew" ]
+			if [ -s "${2%.*}/cask.cr" -a ! "$3" = "--no-cask" -a ! "$3" = "--no-brew" -a ! "$4" = "--no-cask" -a ! "$4" = "--no-brew" -a ! "$5" = "--no-cask" -a ! "$5" = "--no-brew" ]
 				then
 				[ -s "${2%.*}/cask.cr" ] && ( echo -ne "[ \033[1;33mINSTALLING\033[22;0m ] Installing dependency: Homebrew-Cask" && ( brew install phinze/cask/brew-cask >/dev/null 2>&1 && echo -e "\r\033[K[ \033[1;32mDONE\033[22;0m ] Installing dependency: Homebrew-Cask" ) || echo -e "\r\033[K[ \033[1;31mFAILED\033[22;0m ] Installing dependency: Homebrew-Cask")
 				importCasks
 			fi
-			if [ -s "${2%.*}/port.cr" -a ! "$3" = "--no-port" ]
+			if [ -s "${2%.*}/port.cr" -a ! "$3" = "--no-port" -a ! "$4" = "--no-port" -a ! "$5" = "--no-port" ]
 				then
 				if [[ "$EUID" != 0 ]]; then
 				    echo "Administrator privileges are required to install MacPorts packages:"
@@ -160,7 +201,7 @@ elif [ "$1" = "list" ]
 		then
 			pushd "$(dirname "${2%.*}")" >/dev/null 2>&1
 			ARCDIR="${2%.*}"
-			tar xzf "$2" >/dev/null 2>&1 || ( bundlePath="$2" && rm -rf "${2%.*}" && unzipWithPassword )
+			cat "$2" | lzma -d | tar x  >/dev/null 2>&1 || ( bundlePath="$2" && rm -rf "${2%.*}" && unzipWithPassword || exit 1 )
 			echo -e "\033[1;34mContents of cooler.resource.brew: \033[22;0m"
 			if [ -s "${2%.*}/brew.cr" ]
 				then
