@@ -4,7 +4,7 @@ if [ "$COOLER_UPDATE_MODE" = "dev" ]
 	then
 	curl -Ls https://github.com/alebcay/cooler/raw/master/cooler > /usr/local/bin/cooler
 else
-	curl -Ls https://github.com/alebcay/cooler/releases/download/0.6.0/cooler > /usr/local/bin/cooler
+	curl -Ls https://github.com/alebcay/cooler/releases/download/0.7.0/cooler > /usr/local/bin/cooler
 	chmod +x /usr/local/bin/cooler
 	echo -e "\033[1;32mSuccessfully set up cooler. Run it with \"cooler\" and to uninstall, run:"
 	echo -e "\033[1;33mrm /usr/local/bin/cooler\033[22;0m"
