@@ -7,17 +7,7 @@
     
     
     <script type="text/javascript">
-        function selectText(elem) {
-            if (document.selection) {
-                var range = document.body.createTextRange();
-                range.moveToElementText(elem);
-                range.select();
-            } else if (window.getSelection) {
-                var range = document.createRange();
-                range.selectNode(elem);
-                window.getSelection().addRange(range);
-            }
-        }
+        function selectText(b){if(document.selection){var a=document.body.createTextRange();a.moveToElementText(b);a.select()}else window.getSelection&&(a=document.createRange(),a.selectNode(b),window.getSelection().addRange(a))};
     </script>
   </head>
   <body>
