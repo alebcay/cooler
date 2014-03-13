@@ -111,7 +111,7 @@ if [ "$1" = "export" ]
 		echo -e "Reading installed formulae..."
 		brew list | tr "  " "\n" > "brew.cr"
 	fi
-	if [ ! "$3" = "--no-cask" -a ! "$3" = "--no-brew" -a ! "$4" = "--no-cask" -a "$4" = "--no-brew" -a ! "$5" = "--no-cask" -a "$5" = "--no-brew" ]
+	if [ ! "$3" = "--no-cask" -a ! "$4" = "--no-cask" -a ! "$5" = "--no-cask" -a ! "$3" = "--no-brew" -a ! "$4" = "--no-brew" -a ! "$5" = "--no-brew" ]
 		then
 		echo -e "Reading installed casks..."
 		brew cask list | tr "  " "\n" > "cask.cr"
