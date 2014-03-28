@@ -5,7 +5,6 @@ set +o histexpand     # don't expand history expressions
 
 importTaps()
 {
-	echo "$ARCDIR"
 	while read p; do
 		echo -ne "[ \033[1;34mINSTALLING\033[22;0m ] Configuring tap: $p"
 		( brew tap "$p" >/dev/null 2>&1 && echo -e "\r\033[K[ \033[1;32mDONE\033[22;0m ] Configuring tap: $p" ) || echo -e "\r\033[K[ \033[1;31mFAILED\033[22;0m ] Configuring tap: $p"
@@ -97,7 +96,16 @@ if [ "$1" = "export" ]
 		echo ""
 	fi
 	echo -e "Creating working directory..."
-	rm -rf "${2%.*}" >/dev/null ; mkdir "${2%.*}"
+	if [ -d "${2%.*}" ]
+		then
+		if test "$(ls -A ${2%.*} 2>/dev/null)"
+			then
+			echo -e "\033[1;31mThe directory \"${2%.*}\" is not empty!\033[22;0m"
+			exit 1
+		fi
+	else
+		mkdir "${2%.*}" >/dev/null 2>&1
+	fi
 	pushd "${2%.*}" >/dev/null 2>&1
 	ARCDIR="$(pwd)"
 	if [ "$3" = "--mackup" -o "$4" = "--mackup" -o "$5" = "--mackup" ]
@@ -138,11 +146,13 @@ elif [ "$1" = "import" ]
 	then
 	if [ -e "$2" -o -e "$(dirname "${2%.*}")/$2).cb)" ]
 		then
+			pushd "$(dirname $2)"
+			FULLPATH="$(pwd)/$(basename $2)"
+			popd >/dev/null 2>&1
 			pushd "$(dirname "${2%.*}")" >/dev/null 2>&1
 			ARCDIR="$(pwd)/$(basename "${2%.*}")"
-			echo "$ARCDIR"
 			echo "Unpacking Cooler bundle..."
-			cat "$2" | lzma -d | tar x  >/dev/null 2>&1 || ( bundlePath="$2" && rm -rf "${2%.*}" && unzipWithPassword || exit 1 )
+			cat "$FULLPATH" | lzma -d | tar x  >/dev/null 2>&1 || ( bundlePath="$2" && rm -rf "${2%.*}" && unzipWithPassword || exit 1 )
 			if [ -d "${2%.*}/Mackup" -o "$3" = "--mackup" -o "$4" = "--mackup" -o "$5" = "--mackup" ]
 				then
 				importMackupSettings
@@ -175,10 +185,17 @@ elif [ "$1" = "import" ]
 				    sudo -E cooler importPorts "$2"
 				fi
 			fi
+			[ -e "${2%.*}/brew.cr" ] && rm "${2%.*}/brew.cr"
+			[ -e "${2%.*}/cask.cr" ] && rm "${2%.*}/cask.cr"
+			[ -e "${2%.*}/port.cr" ] && rm "${2%.*}/port.cr"
+			[ -e "${2%.*}/tap.cr" ] && rm "${2%.*}/tap.cr"
 			popd >/dev/null 2>&1
-			rm -rf "$ARCDIR"
+			if ! ( test "$(ls -A ${2%.*} 2>/dev/null)" )
+				then
+				rm -rf "$ARCDIR"
+			fi
 	else
-		echo -e "[ \033[1;31mFAILED\033[22;0m ] No such bundle: $2.cb" && exit 1
+		echo -e "[ \033[1;31mFAILED\033[22;0m ] No such bundle: $2" && exit 1
 	fi
 elif [ "$1" = "update" ]
 	then
@@ -203,7 +220,7 @@ elif [ "$1" = "list" ]
 		then
 			pushd "$(dirname "${2%.*}")" >/dev/null 2>&1
 			ARCDIR="$(pwd)/$(basename "${2%.*}")"
-			cat "$2" | lzma -d | tar x  >/dev/null 2>&1 || ( bundlePath="$2" && rm -rf "${2%.*}" && unzipWithPassword || exit 1 )
+			cat "$(dirname "${2%.*}")/$2" | lzma -d | tar x  >/dev/null 2>&1 || ( bundlePath="$2" && rm -rf "${2%.*}" && unzipWithPassword || exit 1 )
 			echo -e "\033[1;34mContents of cooler.resource.brew: \033[22;0m"
 			if [ -s "${2%.*}/brew.cr" ]
 				then
@@ -235,8 +252,15 @@ elif [ "$1" = "list" ]
 						echo "$p"
 					done < "$ARCDIR/port.cr"
 			fi
+			[ -e "${2%.*}/brew.cr" ] && rm "${2%.*}/brew.cr"
+			[ -e "${2%.*}/cask.cr" ] && rm "${2%.*}/cask.cr"
+			[ -e "${2%.*}/port.cr" ] && rm "${2%.*}/port.cr"
+			[ -e "${2%.*}/tap.cr" ] && rm "${2%.*}/tap.cr"
 			popd >/dev/null 2>&1
-			rm -rf "$ARCDIR"
+			if ! ( test "$(ls -A ${2%.*} 2>/dev/null)" )
+				then
+				rm -rf "$ARCDIR"
+			fi
 	else
 		echo -e "[ \033[1;31mFAILED\033[22;0m ] No such bundle: $2" && exit 1
 	fi
