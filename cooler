@@ -136,7 +136,7 @@ if [ "$1" = "export" ]
 		zip -P "$bundlePassword" -r "$(basename "${2%.*}").zip" "$(basename "${2%.*}")"  >/dev/null 2>&1
 		mv "$(basename "${2%.*}").zip" "$(basename "$2")"
 	else
-		tar -c "$(basename "${2%.*}")" | lzma -c -z > "./$(basename "$2")"
+		tar -c "$(basename "${2%.*}")" | lzma -c -z > "./$(basename "$2").cb"
 	fi
 	echo -e "\033[1;32mYour Cooler bundle is at\033[1;33m $2\033[1;34m.\033[22;0m"
 	popd >/dev/null 2>&1
